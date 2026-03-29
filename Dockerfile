@@ -1,4 +1,4 @@
-# Use PHP 8.3 with FPM
+# Use PHP 8.3 FPM
 FROM php:8.3-fpm
 
 # Install dependencies
@@ -10,23 +10,31 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     && docker-php-ext-install pdo_mysql zip
 
+# Disable OPcache to avoid errors
+RUN { \
+    echo 'opcache.enable=0'; \
+    echo 'opcache.enable_cli=0'; \
+    } >> /usr/local/etc/php/conf.d/opcache.ini
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Set working directory
 WORKDIR /var/www
 
-# Copy existing backend files
+# Copy backend code
 COPY . .
+
+# Composer unlimited memory
+ENV COMPOSER_MEMORY_LIMIT=-1
 
 # Install Laravel dependencies
 RUN composer install --no-interaction
 
-# Generate app key
+# Generate Laravel app key
 RUN php artisan key:generate
 
-# Expose port 8000
-EXPOSE 8000
+# Expose PHP-FPM port
+EXPOSE 9000
 
-# Serve the app
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Start PHP-FPM
+CMD ["php-fpm"]
