@@ -9,7 +9,13 @@ use App\Http\Controllers\Auth\OAuthController;
 // Authentication routes
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
-Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+// Protected authentication routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('user', [AuthController::class, 'getCurrentUser']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('complete-profile', [AuthController::class, 'completeProfile']);
+});
 
 // OAuth routes
 Route::get('auth/google', [OAuthController::class, 'redirectToGoogle']);

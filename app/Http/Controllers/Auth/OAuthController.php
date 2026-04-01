@@ -24,7 +24,6 @@ class OAuthController extends Controller
                 [
                     'name'         => $googleUser->getName(),
                     'password'     => bcrypt(uniqid()),
-                    'role'         => 'user',
                     'phone_number' => null,
                     'country'      => null,
                 ]
