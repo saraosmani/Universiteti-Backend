@@ -33,8 +33,9 @@ RUN composer install --no-interaction
 # Generate Laravel app key
 RUN php artisan key:generate
 
-# Expose PHP-FPM port
-EXPOSE 9000
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Use custom entrypoint to run migrations on startup
+ENTRYPOINT ["docker-entrypoint.sh"]
