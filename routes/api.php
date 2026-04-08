@@ -22,6 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [PedagogController::class, 'getAllPedagogues']);
         Route::get('/{id}', [PedagogController::class, 'getPedagogueById']);
         Route::post('/', [PedagogController::class, 'addPedagogue']);
+        Route::put('/{id}', [PedagogController::class, 'updatePedagogue']);
+        Route::delete('/{id}', [PedagogController::class, 'deletePedagogue']);
     });
 });
 

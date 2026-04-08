@@ -8,23 +8,32 @@ use Illuminate\Validation\ValidationException;
 
 class PedagogService
 {
+
     public function getAllPedagogues()
     {
-        return Pedagog::all();
+        // Përdorim 'with' që të marrim edhe të dhënat e departamentit automatikisht
+        return Pedagog::with('departament')->get();
     }
+
 
     public function getPedagogueById($id)
     {
         return Pedagog::find($id);
     }
 
+
     public function createPedagogue(array $data)
     {
         $validator = Validator::make($data, [
-            'emer' => 'required|string|max:255',
-            'mbiemer' => 'required|string|max:255',
-            'email' => 'required|email|unique:pedagoge,email',
-            'departament_id' => 'required|exists:departamente,id',
+            'ped_id'         => 'required|string|unique:pedagog,ped_id',
+            'ped_em'         => 'required|string|max:255',
+            'ped_mb'         => 'required|string|max:255',
+            'ped_email'      => 'required|email|unique:pedagog,ped_email',
+            'dep_id'         => 'required|exists:departament,dep_id',
+            'ped_gjin'       => 'nullable|string|max:1',
+            'ped_tit'        => 'nullable|string|max:50',
+            'ped_dl'         => 'nullable|date',
+            'ped_tel'        => 'nullable|string|max:20',
         ]);
 
         if ($validator->fails()) {
@@ -34,6 +43,7 @@ class PedagogService
         return Pedagog::create($data);
     }
 
+
     public function updatePedagogue($id, array $data)
     {
         $pedagog = Pedagog::find($id);
@@ -42,6 +52,7 @@ class PedagogService
         $pedagog->update($data);
         return $pedagog;
     }
+
 
     public function deletePedagogue($id)
     {
