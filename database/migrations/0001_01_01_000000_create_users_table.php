@@ -14,12 +14,19 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            
+            // SHTUAR: Mbiemri që po kërkonte sistemi
+            $table->string('surname')->nullable(); 
+            
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone_number')->nullable();
             $table->string('country')->nullable();
-            $table->string('role'); 
+            
+            // NDRYSHUAR: I vendosëm një vlerë default që të mos dështojë
+            $table->string('role')->default('student'); 
+            
             $table->rememberToken();
             $table->timestamps();
         });
