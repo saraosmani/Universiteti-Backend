@@ -108,4 +108,37 @@ class AuthController extends Controller
             ],
         ], 200);
     }
+
+    public function completeProfile(Request $request): JsonResponse
+    {
+        $request->validate([
+            'temp_token'   => 'required|string',
+            'phone_number' => 'required|string|max:20',
+            'country'      => 'required|string|max:100',
+            'role'         => 'required|string|in:student,pedagog,administrator',
+        ]);
+
+        $payload = json_decode(base64_decode($request->temp_token), true);
+
+        if (!$payload || now()->timestamp > $payload['exp']) {
+            return response()->json(['message' => 'Temp token expired or invalid'], 422);
+        }
+
+        $user = User::create([
+            'name'         => $payload['name'],
+            'surname'      => $payload['surname'],
+            'email'        => $payload['email'],
+            'password'     => bcrypt(uniqid()),
+            'phone_number' => $request->phone_number,
+            'country'      => $request->country,
+            'role'         => $request->role,
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'data'    => ['user' => $user, 'token' => $token],
+        ]);
+    }
 }
