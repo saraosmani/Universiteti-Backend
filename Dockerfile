@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     libzip-dev \
     libonig-dev \
-    && docker-php-ext-install pdo_mysql zip
+    libicu-dev \
+    && docker-php-ext-install pdo_mysql zip intl
 
 # Disable OPcache to avoid errors
 RUN { \
