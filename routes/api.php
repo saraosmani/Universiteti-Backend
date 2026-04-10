@@ -36,6 +36,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Profile completion
 
+    // Departaments API routes
+    Route::prefix('departaments')->group(function () {
+    Route::get('/', [DepartamentController::class, 'getAllDepartaments']);
+    Route::get('/{id}', [DepartamentController::class, 'getDepartamentById']);
+    Route::post('/', [DepartamentController::class, 'addDepartament']);
+    Route::put('/{id}', [DepartamentController::class, 'updateDepartament']);
+    Route::delete('/{id}', [DepartamentController::class, 'deleteDepartament']);
+    });
+
 });
 
 // OAuth routes
