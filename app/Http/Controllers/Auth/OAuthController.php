@@ -4,14 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 class OAuthController extends Controller
 {
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        return Socialite::driver('google')
+            ->stateless()
+            ->with(['prompt' => 'select_account'])
+            ->redirect();
     }
 
     public function handleGoogleCallback()
@@ -19,25 +21,38 @@ class OAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $user = User::firstOrCreate(
-                ['email' => $googleUser->getEmail()],
-                [
-                    'name'         => $googleUser->getName(),
-                    'password'     => bcrypt(uniqid()),
-                    'phone_number' => null,
-                    'country'      => null,
-                ]
-            );
+            $fullName  = $googleUser->getName();
+            $nameParts = explode(' ', $fullName, 2);
+            $firstName = $nameParts[0];
+            $lastName  = isset($nameParts[1]) ? $nameParts[1] : '';
+            $email     = $googleUser->getEmail();
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $existingUser = User::where('email', $email)->first();
+
+            if ($existingUser) {
+                $token = $existingUser->createToken('auth_token')->plainTextToken;
+                $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
+                return redirect(
+                    $frontendUrl . '/auth/callback?' . http_build_query([
+                        'token'  => $token,
+                        'user'   => json_encode($existingUser),
+                        'is_new' => '0',
+                    ])
+                );
+            }
+
+            $tempPayload = base64_encode(json_encode([
+                'email'   => $email,
+                'name'    => $firstName,
+                'surname' => $lastName,
+                'exp'     => now()->addMinutes(15)->timestamp,
+            ]));
 
             $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
-
-            // Redirect to frontend with token + user encoded in query params
             return redirect(
                 $frontendUrl . '/auth/callback?' . http_build_query([
-                    'token' => $token,
-                    'user'  => json_encode($user),
+                    'temp_token' => $tempPayload,
+                    'is_new'     => '1',
                 ])
             );
         } catch (\Exception $e) {
