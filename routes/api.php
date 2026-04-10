@@ -24,9 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [StudentController::class, 'addStudent']);
         Route::put('/{id}', [StudentController::class, 'updateStudent']);
         Route::delete('/{id}', [StudentController::class, 'deleteStudent']);
-    Route::post('complete-profile', [AuthController::class, 'completeProfile']);
+    });
 
-
+    // Pedagogue API routes
     Route::prefix('pedagogues')->group(function () {
         Route::get('/', [PedagogController::class, 'getAllPedagogues']);
         Route::get('/{id}', [PedagogController::class, 'getPedagogueById']);
@@ -34,6 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [PedagogController::class, 'updatePedagogue']);
         Route::delete('/{id}', [PedagogController::class, 'deletePedagogue']);
     });
+
+    // Profile completion
+    Route::post('complete-profile', [AuthController::class, 'completeProfile']);
 });
 
 // OAuth routes
