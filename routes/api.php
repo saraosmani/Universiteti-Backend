@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\OAuthController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PedagogController; 
 
 // Authentication routes
@@ -15,6 +16,14 @@ Route::post('register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [AuthController::class, 'getCurrentUser']);
     Route::post('logout', [AuthController::class, 'logout']);
+    
+    // Student API routes
+    Route::prefix('students')->group(function () {
+        Route::get('/', [StudentController::class, 'getAllStudents']);
+        Route::get('/{id}', [StudentController::class, 'getStudentById']);
+        Route::post('/', [StudentController::class, 'addStudent']);
+        Route::put('/{id}', [StudentController::class, 'updateStudent']);
+        Route::delete('/{id}', [StudentController::class, 'deleteStudent']);
     Route::post('complete-profile', [AuthController::class, 'completeProfile']);
 
 
