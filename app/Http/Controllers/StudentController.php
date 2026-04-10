@@ -38,7 +38,7 @@ class StudentController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Student created successfully',
+                'message' => 'Student u shtua me sukses!',
                 'data' => $student
             ], 201);
         } catch (ValidationException $e) {
@@ -59,7 +59,7 @@ class StudentController extends Controller
         if (!$student) {
             return response()->json([
                 'success' => false,
-                'message' => 'Student not found'
+                'message' => 'Student nuk u gjet!'
             ], 404);
         }
 
@@ -80,13 +80,13 @@ class StudentController extends Controller
             if (!$student) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Student not found'
+                    'message' => 'Student nuk u gjet!'
                 ], 404);
             }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Student updated successfully',
+                'message' => 'Student u përditësua me sukses!',
                 'data' => $student
             ], 200);
         } catch (ValidationException $e) {
@@ -107,13 +107,13 @@ class StudentController extends Controller
         if (!$deleted) {
             return response()->json([
                 'success' => false,
-                'message' => 'Student not found'
+                'message' => 'Student nuk u gjet!'
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Student deleted successfully'
+            'message' => 'Student u fshi me sukses!'
         ], 200);
     }
 }
