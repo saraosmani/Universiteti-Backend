@@ -1,0 +1,602 @@
+{
+	"info": {
+		"_postman_id": "universiteti-backend-api",
+		"name": "Universiteti Backend API",
+		"description": "Complete API collection for Universiteti Backend. Includes: Authentication, Students, Pedagogues, and OAuth endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8085/api",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "student_id",
+			"value": "STU001",
+			"type": "string"
+		},
+		{
+			"key": "pedagogue_id",
+			"value": "PED001",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.collectionVariables.set('auth_token', jsonData.data.token);",
+									"        console.log('✓ Auth token saved:', jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test User\",\n    \"surname\": \"Tester\",\n    \"email\": \"testuser@universiteti.com\",\n    \"password\": \"password123\",\n    \"phone_number\": \"+38344123456\",\n    \"country\": \"Kosovo\",\n    \"role\": \"student\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "Register a new user account. The auth token will be automatically saved."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.collectionVariables.set('auth_token', jsonData.data.token);",
+									"        console.log('✓ Auth token saved:', jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"testuser@universiteti.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Login with existing credentials. The auth token will be automatically saved."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Profile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newuser@universiteti.com\",\n    \"name\": \"New\",\n    \"surname\": \"User\",\n    \"phone_number\": \"+38344987654\",\n    \"country\": \"Kosovo\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/complete_profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"complete_profile"
+							]
+						},
+						"description": "Complete user profile after OAuth registration."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "Get the currently authenticated user's information."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "Logout the current user and invalidate the auth token."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Students",
+			"item": [
+				{
+					"name": "Get All Students",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/students",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students"
+							]
+						},
+						"description": "Retrieve a list of all students."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/students/{{student_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students",
+								"{{student_id}}"
+							]
+						},
+						"description": "Get details of a specific student by their ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.stu_id) {",
+									"        pm.collectionVariables.set('student_id', jsonData.data.stu_id);",
+									"        console.log('✓ Student ID saved:', jsonData.data.stu_id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stu_id\": \"STU001\",\n    \"stu_em\": \"John\",\n    \"stu_mb\": \"Doe\",\n    \"stu_atesi\": \"Jane Doe\",\n    \"stu_gjini\": \"M\",\n    \"stu_dl\": \"2000-01-15\",\n    \"stu_nuid\": \"1234567890\",\n    \"stu_email\": \"john.doe@student.universiteti.com\",\n    \"stu_dat_regjistrim\": \"2026-01-01\",\n    \"stu_status\": \"active\",\n    \"dep_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/students",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students"
+							]
+						},
+						"description": "Create a new student. The student ID will be automatically saved to the collection variable."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Student",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stu_em\": \"John\",\n    \"stu_mb\": \"Smith\",\n    \"stu_atesi\": \"Jane Smith\",\n    \"stu_gjini\": \"M\",\n    \"stu_dl\": \"2000-01-15\",\n    \"stu_nuid\": \"1234567890\",\n    \"stu_email\": \"john.smith@student.universiteti.com\",\n    \"stu_dat_regjistrim\": \"2026-01-01\",\n    \"stu_status\": \"active\",\n    \"dep_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/students/{{student_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students",
+								"{{student_id}}"
+							]
+						},
+						"description": "Update an existing student's information."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Student",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/students/{{student_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"students",
+								"{{student_id}}"
+							]
+						},
+						"description": "Delete a student by their ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pedagogues",
+			"item": [
+				{
+					"name": "Get All Pedagogues",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pedagogues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pedagogues"
+							]
+						},
+						"description": "Retrieve a list of all pedagogues."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pedagogue By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pedagogues/{{pedagogue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pedagogues",
+								"{{pedagogue_id}}"
+							]
+						},
+						"description": "Get details of a specific pedagogue by their ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Pedagogue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.ped_id) {",
+									"        pm.collectionVariables.set('pedagogue_id', jsonData.data.ped_id);",
+									"        console.log('✓ Pedagogue ID saved:', jsonData.data.ped_id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ped_id\": \"PED001\",\n    \"ped_em\": \"Maria\",\n    \"ped_mb\": \"Johnson\",\n    \"ped_gjin\": \"F\",\n    \"ped_tit\": \"Professor\",\n    \"ped_dl\": \"1980-05-20\",\n    \"ped_tel\": \"+38344555666\",\n    \"ped_email\": \"maria.johnson@universiteti.com\",\n    \"ped_dt\": \"2020-09-01\",\n    \"dep_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/pedagogues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pedagogues"
+							]
+						},
+						"description": "Create a new pedagogue. The pedagogue ID will be automatically saved to the collection variable."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Pedagogue",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ped_em\": \"Maria\",\n    \"ped_mb\": \"Smith\",\n    \"ped_gjin\": \"F\",\n    \"ped_tit\": \"Associate Professor\",\n    \"ped_dl\": \"1980-05-20\",\n    \"ped_tel\": \"+38344555777\",\n    \"ped_email\": \"maria.smith@universiteti.com\",\n    \"ped_dt\": \"2020-09-01\",\n    \"dep_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/pedagogues/{{pedagogue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pedagogues",
+								"{{pedagogue_id}}"
+							]
+						},
+						"description": "Update an existing pedagogue's information."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pedagogue",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/pedagogues/{{pedagogue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"pedagogues",
+								"{{pedagogue_id}}"
+							]
+						},
+						"description": "Delete a pedagogue by their ID."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "OAuth",
+			"item": [
+				{
+					"name": "Redirect to Google",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/google",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"google"
+							]
+						},
+						"description": "Redirect to Google OAuth login page. This should be opened in a browser."
+					},
+					"response": []
+				},
+				{
+					"name": "Google Callback",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/google/callback",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"google",
+								"callback"
+							]
+						},
+						"description": "Google OAuth callback endpoint. This is called by Google after authentication."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
