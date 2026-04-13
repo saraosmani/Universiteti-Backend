@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AuthController extends Controller
 {
@@ -19,7 +21,7 @@ class AuthController extends Controller
             'name'         => 'required|string|max:255',
             'surname'         => 'required|string|max:255',
             'email'        => 'required|string|email|max:255|unique:users',
-            'password'     => 'required|string|min:6',
+            'password'     => 'required|string|min:8',
             'phone_number' => 'required|string|max:20',
             'country'      => 'required|string|max:100',
             'role'         => 'required|string|in:student,pedagog,administrator',
@@ -39,7 +41,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'User registered successfully',
+            'message' => 'Përdoruesi u regjistrua me sukses!',
             'data'    => [
                 'user'  => $user,
                 'token' => $token,
@@ -52,6 +54,15 @@ class AuthController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
+        RateLimiter::attempt(
+            'login:' . $request->ip(),
+            5,
+            function () {},
+        ) ?: throw new HttpResponseException(response()->json([
+            'success' => false,
+            'message' => 'Keni kaluar limitin e përpjekjeve. Ju lutem provoni përsëri më vonë.',
+        ], 429));
+
         $request->validate([
             'email'    => 'required|email',
             'password' => 'required',
@@ -62,7 +73,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid credentials',
+                'message' => 'Kredencialet janë të pavlefshme.',
                 'data'    => null,
             ], 401);
         }
@@ -73,7 +84,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Login successful',
+            'message' => 'Hyrja u krye me sukses!',
             'data'    => [
                 'user'  => $user,
                 'token' => $token,
@@ -90,7 +101,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Logged out successfully',
+            'message' => 'Dalja u krye me sukses!',
             'data'    => null,
         ], 200);
     }
@@ -102,7 +113,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'message' => 'User retrieved successfully',
+            'message' => 'Përdoruesi u mor me sukses!',
             'data'    => [
                 'user' => $request->user(),
             ],
@@ -111,6 +122,15 @@ class AuthController extends Controller
 
     public function completeProfile(Request $request): JsonResponse
     {
+        RateLimiter::attempt(
+            'complete-profile:' . $request->ip(),
+            5,
+            function () {},
+        ) ?: throw new HttpResponseException(response()->json([
+            'success' => false,
+            'message' => 'Keni kaluar limitin e përpjekjeve. Ju lutem provoni përsëri më vonë.',
+        ], 429));
+
         $request->validate([
             'temp_token'   => 'required|string',
             'phone_number' => 'required|string|max:20',
@@ -121,14 +141,14 @@ class AuthController extends Controller
         $payload = json_decode(base64_decode($request->temp_token), true);
 
         if (!$payload || now()->timestamp > $payload['exp']) {
-            return response()->json(['message' => 'Temp token expired or invalid'], 422);
+            return response()->json(['message' => 'Token i përkohshëm ka skaduar ose është i pavlefshëm'], 422);
         }
 
         $user = User::create([
             'name'         => $payload['name'],
             'surname'      => $payload['surname'],
             'email'        => $payload['email'],
-            'password'     => bcrypt(uniqid()),
+            'password'     => Hash::make(uniqid()),
             'phone_number' => $request->phone_number,
             'country'      => $request->country,
             'role'         => $request->role,
