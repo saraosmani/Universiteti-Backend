@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\PedagogController; 
+use App\Http\Controllers\PedagogController;
+use App\Http\Controllers\DepartamentController; 
 
 // Authentication routes
 Route::post('login', [AuthController::class, 'login']);
