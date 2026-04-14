@@ -25,7 +25,8 @@ class Student extends Model
         'stu_email',
         'stu_dat_regjistrim',
         'stu_status',
-        'dep_id'
+        'dep_id',
+        'user_id',
     ];
     
     protected $casts = [

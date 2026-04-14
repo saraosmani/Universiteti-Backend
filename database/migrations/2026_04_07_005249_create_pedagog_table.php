@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('pedagog', function (Blueprint $table) {
             $table->char('ped_id', 10)->primary();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('ped_em', 20);
             $table->string('ped_mb', 20);
             $table->char('ped_gjin', 1);

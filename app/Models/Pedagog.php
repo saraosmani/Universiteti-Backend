@@ -24,7 +24,8 @@ class Pedagog extends Model
         'ped_tel',
         'ped_email',
         'ped_dt',
-        'dep_id'
+        'dep_id',
+        'user_id',
     ];
     
     protected $casts = [

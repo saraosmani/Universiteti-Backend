@@ -34,6 +34,8 @@ class StudentSeeder extends Seeder
                 'stu_email' => 'john.doe1@university.edu',
                 'stu_dat_regjistrim' => '2026-04-01',
                 'stu_status' => 'Aktiv',
+                'user_id' => null,
+
             ],
             [
                 'stu_em' => 'Elira',
@@ -45,6 +47,8 @@ class StudentSeeder extends Seeder
                 'stu_email' => 'elira.kola@university.edu',
                 'stu_dat_regjistrim' => '2025-09-01',
                 'stu_status' => 'Aktiv',
+                'user_id' => null,
+
             ],
             // add more students here...
         ];
