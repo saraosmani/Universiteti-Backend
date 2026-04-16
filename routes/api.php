@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\OAuthController;
+use App\Http\Controllers\CompleteProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PedagogController;
 use App\Http\Controllers\DepartamentController; 
@@ -10,7 +11,7 @@ use App\Http\Controllers\DepartamentController;
 // Authentication routes
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
-Route::post('auth/complete_profile', [AuthController::class, 'completeProfile']);
+Route::post('auth/complete_google_registration', [AuthController::class, 'completeGoogleRegistration']);
 
 // Protected authentication routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -28,6 +29,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Pedagogue API routes
     Route::prefix('pedagogues')->group(function () {
+        Route::put('/complete_profile', [CompleteProfileController::class, 'completePedagogProfile']);
+        Route::get('/profile_status',     [CompleteProfileController::class, 'profileStatus']);
+        
         Route::get('/', [PedagogController::class, 'getAllPedagogues']);
         Route::get('/{id}', [PedagogController::class, 'getPedagogueById']);
         Route::post('/', [PedagogController::class, 'addPedagogue']);
@@ -35,7 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [PedagogController::class, 'deletePedagogue']);
     });
 
-    // Profile completion
 
     // Departaments API routes
     Route::prefix('departaments')->group(function () {

@@ -27,11 +27,7 @@ class AuthController extends Controller
             'password'     => 'required|string|min:8',
             'phone_number' => 'required|string|max:20',
             'country'      => 'required|string|max:100',
-            'role'         => 'required|string|in:student,pedagog,administrator',
-            'gender'       => 'nullable|string|in:M,F',
-            'birth_date'   => 'nullable|date',
-            'ped_tit' => 'nullable|string|max:20',
-
+            'role'         => 'required|string|in:student,pedagog,administrator',   
         ]);
 
         DB::beginTransaction();
@@ -52,9 +48,9 @@ class AuthController extends Controller
                     'ped_id'    => strtoupper(substr('P' . uniqid(), 0, 10)),
                     'ped_em'    => $request->name,
                     'ped_mb'    => $request->surname,
-                    'ped_gjin'  => $request->gender,
-                    'ped_tit'   => $request->ped_tit,
-                    'ped_dl'    => $request->birth_date,
+                    'ped_gjin'  => null,
+                    'ped_tit'   => null,
+                    'ped_dl'    => null,
                     'ped_tel' => preg_replace('/^\+\d{3}/', '', $request->phone_number),
                     'ped_email' => $request->email,
                     'ped_dt'    => now()->toDateString(),
@@ -68,9 +64,9 @@ class AuthController extends Controller
                     'stu_id'             => 'DR' . strtoupper(substr(uniqid(), 0, 10)),
                     'stu_em'             => $request->name,
                     'stu_mb'             => $request->surname,
-                    'stu_atesi'          => 'I panjohur',
-                    'stu_gjini'          => $request->gender,
-                    'stu_dl'             => $request->birth_date,
+                    'stu_atesi'          => null,
+                    'stu_gjini'          => null,
+                    'stu_dl'             => null,
                     'stu_nuid' => strtoupper(substr(uniqid(), 0, 10)),
                     'stu_email'          => $request->email,
                     'stu_dat_regjistrim' => now()->toDateString(),
@@ -176,6 +172,13 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Përdoruesi nuk është i autentifikuar.',
+            ], 401);
+        }
+
         if ($user->role === 'pedagog') {
             $user->load('pedagog');
         } elseif ($user->role === 'student') {
@@ -191,7 +194,7 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function completeProfile(Request $request): JsonResponse
+    public function completeGoogleRegistration(Request $request): JsonResponse
     {
         RateLimiter::attempt(
             'complete-profile:' . $request->ip(),
@@ -207,9 +210,6 @@ class AuthController extends Controller
             'phone_number'  => 'required|string|max:20',
             'country'       => 'required|string|max:100',
             'role'          => 'required|string|in:student,pedagog,administrator',
-            'gender'        => 'required|string|in:M,F',
-            'birth_date'    => 'required|date',
-            'ped_tit'       => 'nullable|string|max:20',
         ]);
 
         $payload = json_decode(base64_decode($request->temp_token), true);
@@ -236,9 +236,9 @@ class AuthController extends Controller
                     'ped_id'    => strtoupper(substr('P' . uniqid(), 0, 10)),
                     'ped_em'    => $payload['name'],
                     'ped_mb'    => $payload['surname'],
-                    'ped_gjin'  => $request->gender,
-                    'ped_tit'   => $request->ped_tit ?? 'Msc.',
-                    'ped_dl'    => $request->birth_date,
+                    'ped_gjin'  => null,
+                    'ped_tit'   => null,
+                    'ped_dl'    => null,
                     'ped_tel'   => preg_replace('/^\+\d{3}/', '', $request->phone_number),
                     'ped_email' => $payload['email'],
                     'ped_dt'    => now()->toDateString(),
@@ -252,9 +252,9 @@ class AuthController extends Controller
                     'stu_id'             => 'DR' . strtoupper(substr(uniqid(), 0, 10)),
                     'stu_em'             => $payload['name'],
                     'stu_mb'             => $payload['surname'],
-                    'stu_atesi'          => 'I panjohur',
-                    'stu_gjini'          => $request->gender,
-                    'stu_dl'             => $request->birth_date,
+                    'stu_atesi'          => null,
+                    'stu_gjini'          => null,
+                    'stu_dl'             => null,
                     'stu_nuid'           => strtoupper(substr(uniqid(), 0, 10)),
                     'stu_email'          => $payload['email'],
                     'stu_dat_regjistrim' => now()->toDateString(),
