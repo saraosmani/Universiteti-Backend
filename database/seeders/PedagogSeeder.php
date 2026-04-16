@@ -21,6 +21,7 @@ class PedagogSeeder extends Seeder
                 'PED_EMAIL' => 'arben@uamd.edu.al',
                 'PED_DT' => '2010-09-01',
                 'DEP_ID' => 'DTI',
+                'USER_ID' => NULL,
             ],
             [
                 'PED_ID' => 'P23456789B',
@@ -33,6 +34,7 @@ class PedagogSeeder extends Seeder
                 'PED_EMAIL' => 'elira@uamd.edu.al',
                 'PED_DT' => '2012-10-10',
                 'DEP_ID' => 'MAT',
+                'USER_ID' => NULL,
             ],
             [
                 'PED_ID' => 'P34567890C',
@@ -45,6 +47,7 @@ class PedagogSeeder extends Seeder
                 'PED_EMAIL' => 'bledi@uamd.edu.al',
                 'PED_DT' => '2018-01-15',
                 'DEP_ID' => 'SHK',
+                'USER_ID' => NULL,
             ],
             [
                 'PED_ID' => 'P45678901D',
@@ -57,6 +60,7 @@ class PedagogSeeder extends Seeder
                 'PED_EMAIL' => 'sara@uamd.edu.al',
                 'PED_DT' => '2008-05-20',
                 'DEP_ID' => 'XXX',
+                'USER_ID' => NULL,
             ],
             [
                 'PED_ID' => 'P56789012E',
@@ -69,6 +73,7 @@ class PedagogSeeder extends Seeder
                 'PED_EMAIL' => 'ilir@uamd.edu.al',
                 'PED_DT' => '2007-03-03',
                 'DEP_ID' => 'DTI',
+                'USER_ID' => NULL,
             ],
         ]);
     }

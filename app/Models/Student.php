@@ -25,13 +25,19 @@ class Student extends Model
         'stu_email',
         'stu_dat_regjistrim',
         'stu_status',
-        'dep_id'
+        'dep_id',
+        'user_id',
     ];
     
     protected $casts = [
         'stu_dl' => 'date',
         'stu_dat_regjistrim' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     
     public function departament()
     {

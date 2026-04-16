@@ -50,4 +50,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the pedagog record associated with the user.
+     */
+    public function pedagog()
+    {
+        return $this->hasOne(Pedagog::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the student record associated with the user.
+     */
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'user_id', 'id');
+    }
 }

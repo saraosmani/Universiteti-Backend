@@ -10,11 +10,12 @@ return new class extends Migration
     {
         Schema::create('pedagog', function (Blueprint $table) {
             $table->char('ped_id', 10)->primary();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('ped_em', 20);
             $table->string('ped_mb', 20);
-            $table->char('ped_gjin', 1);
-            $table->string('ped_tit', 20)->default('Msc.');
-            $table->date('ped_dl');
+            $table->char('ped_gjin', 1)->nullable();
+            $table->string('ped_tit', 20)->nullable();
+            $table->date('ped_dl')->nullable();
             $table->char('ped_tel', 10)->unique();
             $table->string('ped_email', 100)->unique();
             $table->date('ped_dt');
