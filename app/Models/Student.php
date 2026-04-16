@@ -33,6 +33,11 @@ class Student extends Model
         'stu_dl' => 'date',
         'stu_dat_regjistrim' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     
     public function departament()
     {

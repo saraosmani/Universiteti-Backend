@@ -32,6 +32,11 @@ class Pedagog extends Model
         'ped_dl' => 'date',
         'ped_dt' => 'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
     
     public function departament()
     {

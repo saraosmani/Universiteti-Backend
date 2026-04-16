@@ -81,6 +81,12 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
+            if ($user->role === 'pedagog') {
+                $user->load('pedagog');
+            } elseif ($user->role === 'student') {
+                $user->load('student');
+            }
+
             DB::commit();
 
             return response()->json([
@@ -133,6 +139,12 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        if ($user->role === 'pedagog') {
+            $user->load('pedagog');
+        } elseif ($user->role === 'student') {
+            $user->load('student');
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Hyrja u krye me sukses!',
@@ -162,11 +174,19 @@ class AuthController extends Controller
      */
     public function getCurrentUser(Request $request): JsonResponse
     {
+        $user = $request->user();
+
+        if ($user->role === 'pedagog') {
+            $user->load('pedagog');
+        } elseif ($user->role === 'student') {
+            $user->load('student');
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Përdoruesi u mor me sukses!',
             'data'    => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
         ], 200);
     }

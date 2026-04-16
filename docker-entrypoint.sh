@@ -15,7 +15,7 @@ echo "✅ Database is ready!"
 
 # Run migrations
 echo "🔄 Running database migrations..."
-php artisan migrate --force
+php artisan migrate:fresh --seed --force
 
 echo "✅ Migrations completed!"
 
