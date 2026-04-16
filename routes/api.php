@@ -17,9 +17,13 @@ Route::post('auth/complete_google_registration', [AuthController::class, 'comple
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [AuthController::class, 'getCurrentUser']);
     Route::post('logout', [AuthController::class, 'logout']);
+
+    Route::get('profile_status', [CompleteProfileController::class, 'getProfileStatus']);
     
     // Student API routes
     Route::prefix('students')->group(function () {
+        Route::put('/complete_profile', [CompleteProfileController::class, 'completeStudentProfile']);
+        
         Route::get('/', [StudentController::class, 'getAllStudents']);
         Route::get('/{id}', [StudentController::class, 'getStudentById']);
         Route::post('/', [StudentController::class, 'addStudent']);
@@ -30,7 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Pedagogue API routes
     Route::prefix('pedagogues')->group(function () {
         Route::put('/complete_profile', [CompleteProfileController::class, 'completePedagogProfile']);
-        Route::get('/profile_status',     [CompleteProfileController::class, 'profileStatus']);
         
         Route::get('/', [PedagogController::class, 'getAllPedagogues']);
         Route::get('/{id}', [PedagogController::class, 'getPedagogueById']);

@@ -13,9 +13,9 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('stu_em', 100);
             $table->string('stu_mb', 100);
-            $table->string('stu_atesi', 100)->default('I panjohur');
-            $table->char('stu_gjini', 1);
-            $table->date('stu_dl');
+            $table->string('stu_atesi', 100)->nullable();
+            $table->char('stu_gjini')->nullable();
+            $table->date('stu_dl')->nullable();
             $table->char('stu_nuid', 10)->unique();
             $table->string('stu_email', 150)->unique();
             $table->date('stu_dat_regjistrim');

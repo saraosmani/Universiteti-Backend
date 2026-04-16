@@ -14,8 +14,6 @@ class CompleteProfileController extends Controller
      * Complete a pedagog's profile after initial registration.
      * Sets department, title, gender, and birth date.
      *
-     * PATCH /api/pedagog/complete-profile
-     * Requires: auth:sanctum middleware
      */
     public function completePedagogProfile(Request $request): JsonResponse
     {
@@ -83,42 +81,130 @@ class CompleteProfileController extends Controller
     }
 
     /**
-     * Check whether the authenticated pedagog has completed their profile.
-     * Frontend uses this to decide whether to show the stepper.
+     * Complete a pedagog's profile after initial registration.
+     * Sets department, title, gender, and birth date.
      *
-     * GET /api/pedagogues/profile-status
-     * Requires: auth:sanctum middleware
      */
-    public function profileStatus(Request $request): JsonResponse
+    public function completeStudentProfile(Request $request): JsonResponse
     {
         $user = $request->user();
 
-        if ($user->role !== 'pedagog') {
+        if ($user->role !== 'student') {
             return response()->json([
-                'success'      => true,
-                'is_complete'  => true,
-            ]);
+                'success' => false,
+                'message' => 'Vetëm studentët mund ta plotësojnë këtë profil.',
+            ], 403);
         }
 
-        // Explicitly load the pedagog relationship
-        $user->load('pedagog');
-        $pedagog = $user->pedagog;
+        $user->load('student');
+        $student = $user->student;
 
-        if (!$pedagog) {
+        if (!$student) {
             return response()->json([
-                'success'     => false,
-                'message'     => 'Rekordi i pedagogut nuk u gjet.',
+                'success' => false,
+                'message' => 'Rekordi i studentit nuk u gjet.',
             ], 404);
         }
 
-        $isComplete = $pedagog->dep_id !== null
-            && $pedagog->ped_tit !== null
-            && $pedagog->ped_gjin !== null
-            && $pedagog->ped_dl !== null;
+        try {
+            $validated = $request->validate([
+                'stu_atesi'    => 'required|string|max:20',
+                'stu_gjini'   => 'required|string|in:M,F',
+                'stu_dl'     => 'required|date|before:today',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $e->errors(),
+            ], 422);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $student->update([
+                'stu_atesi'    => $validated['stu_atesi'],
+                'stu_gjini'   => $validated['stu_gjini'],
+                'stu_dl'     => $validated['stu_dl'],
+            ]);
+
+            $user->load('student');
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Profili u plotësua me sukses!',
+                'data'    => [
+                    'user' => $user,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Check whether the authenticated user has completed their profile.
+     * Frontend uses this to decide whether to show the stepper.
+     * Handles both student and pedagog roles.
+     *
+     */
+    public function getProfileStatus(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->role === 'student') {
+            $user->load('student');
+            $student = $user->student;
+
+            if (!$student) {
+                return response()->json([
+                    'success'     => false,
+                    'message'     => 'Rekordi i studentit nuk u gjet.',
+                ], 404);
+            }
+
+            $isComplete = $student->stu_atesi !== null
+                && $student->stu_gjini !== null
+                && $student->stu_dl !== null;
+
+            return response()->json([
+                'success'     => true,
+                'is_complete' => $isComplete,
+            ]);
+        }
+
+        if ($user->role === 'pedagog') {
+            $user->load('pedagog');
+            $pedagog = $user->pedagog;
+
+            if (!$pedagog) {
+                return response()->json([
+                    'success'     => false,
+                    'message'     => 'Rekordi i pedagogut nuk u gjet.',
+                ], 404);
+            }
+
+            $isComplete = $pedagog->dep_id !== null
+                && $pedagog->ped_tit !== null
+                && $pedagog->ped_gjin !== null
+                && $pedagog->ped_dl !== null;
+
+            return response()->json([
+                'success'     => true,
+                'is_complete' => $isComplete,
+            ]);
+        }
 
         return response()->json([
-            'success'     => true,
-            'is_complete' => $isComplete,
+            'success'      => true,
+            'is_complete'  => true,
         ]);
     }
 }
