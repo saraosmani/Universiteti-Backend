@@ -13,7 +13,7 @@ class StudentSeeder extends Seeder
      */
     private function generateStuId(): string
     {
-        $letters = strtoupper(Str::random(3)); 
+        $letters = strtoupper(Str::random(3));
         $abc = ['A', 'B', 'C'];
         $letter4 = $abc[array_rand($abc)];
         $numbers = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
