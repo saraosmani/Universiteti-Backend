@@ -7,13 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Seksion extends Model
 {
     protected $table = 'seksion';
-    
     protected $primaryKey = 'sek_id';
-    
-    public $incrementing = true;
-    
-    protected $keyType = 'int';
-    
     public $timestamps = false;
 
     protected $fillable = [
@@ -28,32 +22,12 @@ class Seksion extends Model
         'sem_id',
         'prog_id',
     ];
-    
+
     public function lenda()
     {
         return $this->belongsTo(Lenda::class, 'lend_id', 'lend_id');
     }
-    
-    public function pedagog()
-    {
-        return $this->belongsTo(Pedagog::class, 'ped_id', 'ped_id');
-    }
-    
-    public function salle()
-    {
-        return $this->belongsTo(Auditor::class, 'salle_id', 'salle_id');
-    }
-    
-    public function semestri()
-    {
-        return $this->belongsTo(Semestri::class, 'sem_id', 'sem_id');
-    }
-    
-    public function programStudimi()
-    {
-        return $this->belongsTo(ProgramStudimi::class, 'prog_id', 'prog_id');
-    }
-    
+
     public function regjistrime()
     {
         return $this->hasMany(Regjistrim::class, 'sek_id', 'sek_id');
