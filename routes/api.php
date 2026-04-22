@@ -62,10 +62,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/students', [VleresimController::class, 'getStudents']);
         Route::put('/update/{regjId}', [VleresimController::class, 'updateVleresim']);
     });
-
+});
 
 
 // OAuth routes
 Route::get('auth/google', [OAuthController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [OAuthController::class, 'handleGoogleCallback']);
-});
+
+
