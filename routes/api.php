@@ -7,6 +7,8 @@ use App\Http\Controllers\CompleteProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PedagogController;
 use App\Http\Controllers\DepartamentController; 
+use App\Http\Controllers\VleresimController;
+
 
 // Authentication routes
 Route::post('login', [AuthController::class, 'login']);
@@ -52,8 +54,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/{id}', [DepartamentController::class, 'deleteDepartament']);
     });
 
+  
+// VLERËSIM (TASK 1)
+    Route::prefix('vleresim')->group(function () {
+        Route::get('/lendet', [VleresimController::class, 'getLendet']);
+        Route::get('/semestre', [VleresimController::class, 'getSemestre']);
+        Route::get('/students', [VleresimController::class, 'getStudents']);
+        Route::put('/update/{regjId}', [VleresimController::class, 'updateVleresim']);
+    });
 });
+
 
 // OAuth routes
 Route::get('auth/google', [OAuthController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [OAuthController::class, 'handleGoogleCallback']);
+
+
