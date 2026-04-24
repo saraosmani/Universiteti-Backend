@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Pedagog;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -11,7 +12,6 @@ class PedagogService
 
     public function getAllPedagogues()
     {
-        // Përdorim 'with' që të marrim edhe të dhënat e departamentit automatikisht
         return Pedagog::with('departament')->get();
     }
 
@@ -50,6 +50,17 @@ class PedagogService
         if (!$pedagog) return null;
 
         $pedagog->update($data);
+
+        if (isset($data['ped_em']) || isset($data['ped_mb'])) {
+            $user = User::where('email', $pedagog->ped_email)->first();
+            if ($user) {
+                $user->update([
+                    'name'    => $data['ped_em'] ?? $pedagog->ped_em,
+                    'surname' => $data['ped_mb'] ?? $pedagog->ped_mb,
+                ]);
+            }
+        }
+
         return $pedagog;
     }
 
