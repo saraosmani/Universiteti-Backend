@@ -32,7 +32,7 @@ class VleresimHelper
                 'vit_akademik.vit_id',
                 'vit_akademik.vit_emer'
             )
-            ->distinct()
+            ->distinct()  
             ->orderByDesc('vit_akademik.vit_emer')
             ->orderBy('semestri.sem_nr')
             ->get();
