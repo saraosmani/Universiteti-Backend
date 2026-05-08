@@ -7,14 +7,45 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class CompleteProfileController extends Controller
 {
-    /**
-     * Complete a pedagog's profile after initial registration.
-     * Sets department, title, gender, and birth date.
-     *
-     */
+    private function birthDateRules(int $minAge, int $maxAge, string $context = ''): array
+    {
+        return [
+            'required',
+            'date',
+            function ($attribute, $value, $fail) use ($minAge, $maxAge, $context) {
+                $today     = now()->startOfDay();
+                $yesterday = now()->subDay()->startOfDay();
+                $birthDate = Carbon::parse($value)->startOfDay();
+
+                if ($birthDate->greaterThanOrEqualTo($today)) {
+                    $fail('Data e lindjes nuk mund të jetë sot apo në të ardhmen.');
+                    return;
+                }
+
+                if ($birthDate->equalTo($yesterday)) {
+                    $fail('Data e lindjes nuk mund të jetë dje.' . ($context ? " $context" : ''));
+                    return;
+                }
+
+                $age = $birthDate->diffInYears($today);
+
+                if ($age < $minAge) {
+                    $fail("Duhet të keni të paktën {$minAge} vjeç.");
+                    return;
+                }
+
+                if ($age > $maxAge) {
+                    $fail("Mosha maksimale është {$maxAge} vjeç.");
+                    return;
+                }
+            },
+        ];
+    }
+
     public function completePedagogProfile(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -35,13 +66,19 @@ class CompleteProfileController extends Controller
             ], 404);
         }
 
+        $rules = [
+            'dep_id'   => ['required', 'string', 'exists:departament,dep_id'],
+            'ped_tit'  => ['required', 'string', 'max:20'],
+            'ped_gjin' => ['required', 'string', 'in:M,F'],
+            'ped_dl'   => $this->birthDateRules(
+                22,
+                80,
+                'Kjo datë nuk përputhet me kriteret e anëtarësimit akademik.'
+            ),
+        ];
+
         try {
-            $validated = $request->validate([
-                'dep_id'     => 'required|string|exists:departament,dep_id',
-                'ped_tit'    => 'required|string|max:20',
-                'ped_gjin'   => 'required|string|in:M,F',
-                'ped_dl'     => 'required|date|before:today',
-            ]);
+            $validated = $request->validate($rules);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -66,9 +103,7 @@ class CompleteProfileController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Profili u plotësua me sukses!',
-                'data'    => [
-                    'user' => $user,
-                ],
+                'data'    => ['user' => $user],
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -80,11 +115,6 @@ class CompleteProfileController extends Controller
         }
     }
 
-    /**
-     * Complete a pedagog's profile after initial registration.
-     * Sets department, title, gender, and birth date.
-     *
-     */
     public function completeStudentProfile(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -106,12 +136,14 @@ class CompleteProfileController extends Controller
             ], 404);
         }
 
+        $rules = [
+            'stu_atesi' => ['required', 'string', 'max:20'],
+            'stu_gjini' => ['required', 'string', 'in:M,F'],
+            'stu_dl'    => $this->birthDateRules(16, 60),
+        ];
+
         try {
-            $validated = $request->validate([
-                'stu_atesi'    => 'required|string|max:20',
-                'stu_gjini'   => 'required|string|in:M,F',
-                'stu_dl'     => 'required|date|before:today',
-            ]);
+            $validated = $request->validate($rules);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -123,9 +155,9 @@ class CompleteProfileController extends Controller
 
         try {
             $student->update([
-                'stu_atesi'    => $validated['stu_atesi'],
-                'stu_gjini'   => $validated['stu_gjini'],
-                'stu_dl'     => $validated['stu_dl'],
+                'stu_atesi' => $validated['stu_atesi'],
+                'stu_gjini' => $validated['stu_gjini'],
+                'stu_dl'    => $validated['stu_dl'],
             ]);
 
             $user->load('student');
@@ -135,9 +167,7 @@ class CompleteProfileController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Profili u plotësua me sukses!',
-                'data'    => [
-                    'user' => $user,
-                ],
+                'data'    => ['user' => $user],
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -149,12 +179,6 @@ class CompleteProfileController extends Controller
         }
     }
 
-    /**
-     * Check whether the authenticated user has completed their profile.
-     * Frontend uses this to decide whether to show the stepper.
-     * Handles both student and pedagog roles.
-     *
-     */
     public function getProfileStatus(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -165,19 +189,16 @@ class CompleteProfileController extends Controller
 
             if (!$student) {
                 return response()->json([
-                    'success'     => false,
-                    'message'     => 'Rekordi i studentit nuk u gjet.',
+                    'success' => false,
+                    'message' => 'Rekordi i studentit nuk u gjet.',
                 ], 404);
             }
 
             $isComplete = $student->stu_atesi !== null
                 && $student->stu_gjini !== null
-                && $student->stu_dl !== null;
+                && $student->stu_dl    !== null;
 
-            return response()->json([
-                'success'     => true,
-                'is_complete' => $isComplete,
-            ]);
+            return response()->json(['success' => true, 'is_complete' => $isComplete]);
         }
 
         if ($user->role === 'pedagog') {
@@ -186,25 +207,19 @@ class CompleteProfileController extends Controller
 
             if (!$pedagog) {
                 return response()->json([
-                    'success'     => false,
-                    'message'     => 'Rekordi i pedagogut nuk u gjet.',
+                    'success' => false,
+                    'message' => 'Rekordi i pedagogut nuk u gjet.',
                 ], 404);
             }
 
-            $isComplete = $pedagog->dep_id !== null
-                && $pedagog->ped_tit !== null
+            $isComplete = $pedagog->dep_id   !== null
+                && $pedagog->ped_tit  !== null
                 && $pedagog->ped_gjin !== null
-                && $pedagog->ped_dl !== null;
+                && $pedagog->ped_dl   !== null;
 
-            return response()->json([
-                'success'     => true,
-                'is_complete' => $isComplete,
-            ]);
+            return response()->json(['success' => true, 'is_complete' => $isComplete]);
         }
 
-        return response()->json([
-            'success'      => true,
-            'is_complete'  => true,
-        ]);
+        return response()->json(['success' => true, 'is_complete' => true]);
     }
 }
