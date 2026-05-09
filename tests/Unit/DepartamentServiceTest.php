@@ -11,9 +11,12 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Database\Seeders\FakultetSeeder; 
 
 class DepartamentServiceTest extends TestCase
 {
+    use RefreshDatabase;
     use MockeryPHPUnitIntegration;
 
     protected $mockDao;
@@ -22,6 +25,7 @@ class DepartamentServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed(FakultetSeeder::class);
         $this->mockDao = Mockery::mock(DepartamentDao::class);
         $this->service = new DepartamentService($this->mockDao);
     }
@@ -37,16 +41,15 @@ class DepartamentServiceTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
     }
 
-    public function test_it_creates_departament_successfully()
+public function test_it_creates_departament_successfully()
     {
-        // 1. BYPASS DATABASE VALIDATION: Mock the 'exists' and 'unique' rules
-        Validator::extend('exists', function () { return true; });
-        Validator::extend('unique', function () { return true; });
+        // 3. NO MORE HACKS! We removed Validator::extend
+        // The validator will now actually check the database we seeded above.
 
         $data = [
             'dep_id' => 'TST', 
             'dep_em' => 'Test Department Name',
-            'fak_id' => 'FTI', 
+            'fak_id' => 'FTI', // This ID exists thanks to the seeder
             'ped_id' => 'P12345678A'
         ];
 
@@ -59,7 +62,6 @@ class DepartamentServiceTest extends TestCase
 
         $this->assertEquals('TST', $result->dep_id);
     }
-
     public function test_create_departament_validation_fails()
     {
         $this->expectException(ValidationException::class);
