@@ -43,13 +43,10 @@ class DepartamentServiceTest extends TestCase
 
 public function test_it_creates_departament_successfully()
     {
-        // 3. NO MORE HACKS! We removed Validator::extend
-        // The validator will now actually check the database we seeded above.
-
         $data = [
             'dep_id' => 'TST', 
             'dep_em' => 'Test Department Name',
-            'fak_id' => 'FTI', // This ID exists thanks to the seeder
+            'fak_id' => 'FTI', 
             'ped_id' => 'P12345678A'
         ];
 
