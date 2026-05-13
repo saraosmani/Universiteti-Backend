@@ -17,7 +17,6 @@ class SeksionHelperTest extends TestCase
     /** @test */
     public function test_formato_orarin_removes_seconds()
     {
-        // Database often gives 08:30:00, we want 08:30
         $result = SeksionHelper::formatoOrarin('08:30:00', '10:00:00');
         $this->assertEquals('08:30 - 10:00', $result);
     }
@@ -33,7 +32,6 @@ class SeksionHelperTest extends TestCase
 
         $result = SeksionHelper::grupoPorDita($data);
 
-        // Assert that 'Hene' has 2 items and 'Marte' has 1
         $this->assertCount(2, $result['Hene']);
         $this->assertCount(1, $result['Marte']);
         $this->assertEquals('Leksion', $result['Hene'][0]['emri']);
@@ -57,7 +55,6 @@ class SeksionHelperTest extends TestCase
         $this->assertEquals(25, $result[0]['NR_STUDENTEVE']);
         $this->assertEquals(10, $result[1]['NR_STUDENTEVE']);
         
-        // Test default value if SEK_ID is missing
         $seksionetMissing = [['SEK_ID' => 99]];
         $resultMissing = SeksionHelper::mergoMeStudentet($seksionetMissing, $studentetCount);
         $this->assertEquals(0, $resultMissing[0]['NR_STUDENTEVE']);
