@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             StudentSeeder::class,
             SeksionSeeder::class,
             RegjistrimSeeder::class,
+            ProvimSeeder::class,
         ]);
     }
 }
