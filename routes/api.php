@@ -10,6 +10,7 @@ use App\Http\Controllers\DepartamentController;
 use App\Http\Controllers\FakultetController;
 use App\Http\Controllers\SeksionController;
 use App\Http\Controllers\VleresimController;
+use App\Http\Controllers\ProvimController;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
@@ -64,6 +65,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/semestre', [VleresimController::class, 'getSemestre']);
         Route::get('/students', [VleresimController::class, 'getStudents']);
         Route::put('/update/{regjId}', [VleresimController::class, 'updateVleresim']);
+    });
+
+    Route::prefix('provime')->group(function () {
+        Route::get('/',        [ProvimController::class, 'list']);
+        Route::post('/',       [ProvimController::class, 'add']);
+        Route::put('/{id}',    [ProvimController::class, 'update']);
+        Route::delete('/{id}', [ProvimController::class, 'delete']);
     });
 });
 
