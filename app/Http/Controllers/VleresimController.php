@@ -8,10 +8,11 @@ use App\Helpers\VleresimHelper;
 
 class VleresimController extends Controller
 {
-    private function getPedId(): int
+    private function getPedId(): string
     {
         return Auth::user()->pedagog->ped_id;
     }
+
 
     public function getLendet()
     {
@@ -43,6 +44,6 @@ class VleresimController extends Controller
         ]);
 
         VleresimHelper::updateVleresim($regjId, $validated);
-        return response()->json(['message' => 'Vlerësimi u ruajt me sukses']);
+        return response()->json(['message' => 'Vlerësimi u ruajt me sukses!']);
     }
 }
