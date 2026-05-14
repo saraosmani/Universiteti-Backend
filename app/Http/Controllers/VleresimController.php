@@ -10,9 +10,8 @@ class VleresimController extends Controller
 {
     private function getPedId(): string
     {
-        return Auth::user()->pedagog->ped_id;
+        return (string) Auth::user()->pedagog->ped_id;
     }
-
 
     public function getLendet()
     {
