@@ -13,6 +13,15 @@ class PedagogController extends Controller
     public function __construct(PedagogService $pedagogService)
     {
         $this->pedagogService = $pedagogService;
+
+        $this->middleware('auth:sanctum');
+
+        // AUTHORIZATION: Vetem admini mund te beje ndryshime ose shtime/fshirje 
+        $this->middleware('check.role:admin')->only([
+            'addPedagogue', 
+            'updatePedagogue', 
+            'deletePedagogue'
+        ]);
     }
 
     public function getAllPedagogues()
