@@ -6,13 +6,14 @@ use Tests\TestCase;
 use App\Services\StudentService;
 use App\Services\Student\Dao\StudentDao;
 use App\Models\Student;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
 class StudentServiceTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
+    use MockeryPHPUnitIntegration, RefreshDatabase;
 
     protected $studentDaoMock;
     protected $studentService;
