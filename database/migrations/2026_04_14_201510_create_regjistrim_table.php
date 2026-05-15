@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('regjistrim', function (Blueprint $table) {
             $table->increments('regj_id');
             $table->date('dat_regj')->nullable();
-            $table->decimal('pik_midterm', 5, 2)->default(0);
-            $table->decimal('pik_final', 5, 2)->default(0);
-            $table->decimal('pik_detyra', 5, 2)->default(0);
+            $table->decimal('pik_midterm', 5, 2)->nullable()->default(null);
+            $table->decimal('pik_final', 5, 2)->nullable()->default(null);
+            $table->decimal('pik_detyra', 5, 2)->nullable()->default(null);
             $table->string('regj_status', 10);
             $table->unsignedInteger('sek_id');
             $table->unsignedSmallInteger('lend_id');
