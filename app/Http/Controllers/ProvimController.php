@@ -12,8 +12,7 @@ class ProvimController extends Controller
 {
     /**
      * GET /api/provime
-     * Kthen të gjitha provimet e pedagogut të autentifikuar
-     * për semestrin aktiv.
+     * Kthen të gjitha provimet e pedagogut të autentifikuar (të gjitha semestrat).
      */
     public function list(): JsonResponse
     {
@@ -27,7 +26,6 @@ class ProvimController extends Controller
             'semestri.vitAkademik',
         ])
             ->where('ped_id', $pedId)
-            ->whereHas('semestri', fn($q) => $q->where('sem_aktiv', 1))
             ->orderBy('prov_data')
             ->orderBy('prov_ora')
             ->get();
@@ -48,7 +46,7 @@ class ProvimController extends Controller
             ],
             'semestri' => [
                 'nr'  => $p->semestri->sem_nr,
-                'vit' => $p->semestri->vitAkademik->vit_akademik ?? '',
+                'vit' => $p->semestri->vitAkademik->vit_emer ?? '',
             ],
         ]);
 
